@@ -1,0 +1,31 @@
+{
+  "name": "@manladag/source",
+  "version": "1.0.0",
+  "description": "manladag parent class",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "mocha --timeout 30000 --reporter spec",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zepoze/manladag-source.git"
+  },
+  "author": "Pierre-Evens Levasseur",
+  "license": "SEE LICENSE IN ./LICENSE",
+  "bugs": {
+    "url": "https://github.com/Zepoze/manladag-source/issues"
+  },
+  "homepage": "https://github.com/Zepoze/manladag-source#readme",
+  "devDependencies": {
+    "@types/node": "^13.11.0",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.1",
+    "sinon": "^9.0.1",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "axios": "^0.19.2"
+  }
+}
