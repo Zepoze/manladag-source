@@ -2,49 +2,7 @@ import { EventEmitter } from 'events'
 import axios from 'axios'
 import Path from 'path'
 import fs from 'fs'
-import { onDonwloadPageFinishedListener, onDonwloadPageStartedListener, onDonwloadPageErrorListener, onDonwloadChapterStartedListener, onDonwloadChapterFinishedListener, onDonwloadChapterErrorListener } from './event';
-
-export declare interface manga {
-    name: string
-}
-
-export declare interface source {
-    site: string,
-    url: string,
-    mangas: { [name:string]: manga },
-    getNumberPageChapter(manga:manga,chapter:number):Promise<number>,
-    getUrlPages(manga:manga,chapter:number,numberPage:number):Promise<string[]>,
-    getLastChapter(manga:manga):Promise<number>,
-    chapterIsAvailable(manga:manga,chapter:number) : Promise<boolean>
-}
-
-async function downloadImage(path:string, url:string,page:number) {
-    return new Promise(async (resolve, reject) => {
-        const writer = fs.createWriteStream(path)
-        
-        
-        const response = await axios({
-            url,
-            method: 'GET',
-            responseType: 'stream'
-        })
-       
-    
-        response.data.pipe(writer)
-        const t = 
-        setTimeout(()=> {
-            writer.destroy(new Error('Impossible to download the page '+(page+1)+' Please check your Internet Connection'))
-        },30000)
-        writer.on('finish', () => {
-            try {
-            clearTimeout(t)
-        } finally {
-            resolve()	
-        }
-        })
-        writer.on('error', reject)
-      })
-}
+import downloadImage from './functions'
 
 export class ManladagSource extends EventEmitter implements source{
     site:string
