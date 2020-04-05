@@ -35,7 +35,7 @@ const source = new index(testInterface)
 const tmpDir = Path.join(os.tmpdir(),'manladag-source-testzedrftgyhuj')
 if(!fs.existsSync(tmpDir))fs.mkdirSync(tmpDir)
 
-source.addDownloadChapterFinishedListener(({path,chapter,}) => {
+source.addOnDownloadChapterFinishedListener(({path,chapter,}) => {
     console.log(`chapter n°${chapter} download in -> ${path}`)
 })
 describe('ManladagSource class test', function () {
