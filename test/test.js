@@ -1,6 +1,8 @@
 var expect = require('chai').expect;
 var index = require('../dist/index.js').ManladagSource
-
+var os = require('os')
+var Path = require('path')
+var fs = require('fs')
 const m = {
     "one-piece":{
         name:"One Piece"
@@ -30,17 +32,25 @@ const testInterface = {
 }
 
 const source = new index(testInterface)
-describe('ManladagSource class test', () => {
+const tmpDir = Path.join(os.tmpdir(),'manladag-source-testzedrftgyhuj')
+if(!fs.existsSync(tmpDir))fs.mkdirSync(tmpDir)
+
+source.addDownloadChapterFinishedListener(({path,chapter,}) => {
+    console.log(`chapter n°${chapter} download in -> ${path}`)
+})
+describe('ManladagSource class test', function () {
+    this.timeout(30000)
     it("download test",async () => {
+        
         try {
-        const result = await source.downloadChapter("one-piece",500,__dirname)
+        const result = await source.downloadChapter("one-piece",500,tmpDir)
 
         expect(result).equal(undefined)
         }catch(e) {expect.fail("it should not throw error")}
     })
     it("download fail for manga isnt",async () => {
         try {
-            const result = await source.downloadChapter("one-piec",500,__dirname)
+            const result = await source.downloadChapter("one-piec",500,tmpDir)
             expect.fail("it should throw error")
         }catch(e) {
             expect(e.message).to.include(`The manga_key 'one-piec' isn't exist`)
@@ -48,7 +58,7 @@ describe('ManladagSource class test', () => {
     })
     it("download fail for chapter isnt",async () => {
         try {
-            const result = await source.downloadChapter("one-piece",50,__dirname)
+            const result = await source.downloadChapter("one-piece",50,tmpDir)
             expect.fail("it should throw error")
         }catch(e) {
             expect(e.message).to.include(`The chapter 50 is not available on`)
