@@ -120,18 +120,18 @@ export class ManladagSource extends EventEmitter implements source{
     }
 
     /**
-     * addDownloadChapterFinishedListener
+     * addOnDownloadChapterFinishedListener
      * add a callback when a download's page finished
      */
-    public addDownloadChapterFinishedListener(listener:onDonwloadChapterFinishedListener) {
+    public addOnDownloadChapterFinishedListener(listener:onDonwloadChapterFinishedListener) {
         this.on('download-chapter-finished', listener)
     }
 
     /**
-     * addDownloadChapterErrorListener
+     * addOnDownloadChapterErrorListener
      * add a callback when a download's chapter throw Error
      */
-    public addDownloadChapterErrorListener(listener:onDonwloadChapterErrorListener) {
+    public addOnDownloadChapterErrorListener(listener:onDonwloadChapterErrorListener) {
         this.on('download-chapter-error', listener)
     }
 }
