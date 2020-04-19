@@ -16,8 +16,9 @@ const testInterface = {
     async getNumberPageChapter(manga,chapter) {
         return Promise.resolve(Math.floor(Math.random() * Math.floor(12))+4)
     },
-    async getUrlPages(manga,chapter,numberPage){
+    async getUrlPages(manga,chapter){
         const tab = []
+        const numberPage = await this.getNumberPageChapter(manga,chapter)
         for(let i =0;i<numberPage;i++) {
             tab.push(this.url+'/seed/'+"gbue"+i+'/200/300')
         }

@@ -10,7 +10,7 @@ export class ManladagSource extends EventEmitter implements source{
     getNumberPageChapter(manga:manga,chapter:number):Promise<number>{
         return Promise.resolve(0)
     }
-    getUrlPages(manga:manga,chapter:number,numberPage:number):Promise<string[]>{
+    getUrlPages(manga:manga,chapter:number):Promise<string[]>{
         return Promise.resolve([])
     }
     getLastChapter(manga:manga):Promise<number> {
@@ -46,9 +46,9 @@ export class ManladagSource extends EventEmitter implements source{
 
             if(!(await this.chapterIsAvailable(manga,chapter))) throw new Error(`The chapter ${chapter} is not available on ${this.site}`)
 
-            const numberPage:number = await this.getNumberPageChapter(manga,chapter)
+            const tabUrl:string[] = await this.getUrlPages(manga,chapter)
 
-            const tabUrl:string[] = await this.getUrlPages(manga,chapter,numberPage)
+            const numberPage:number = tabUrl.length
 
             let path:string,ext:string
 
@@ -59,12 +59,12 @@ export class ManladagSource extends EventEmitter implements source{
                 ext = (ext=='.jpg'||ext=='.png')? `${ext}`:'.jpg'
                 path = Path.join(dirDownload,(i<10 ? `0${i+ext}`: `${i+ext}`))
 
-                this.emit('download-page-started', {path,page:i,chapter,source:this.site,manga})
+                this.emit('download-page-started', {path,page:i+1,chapter,source:this.site,manga})
                 try {
-                    await downloadImage(path,tabUrl[i],i)
-                    this.emit('download-page-finished', {path,page:i,chapter,source:this.site,manga:manga.name})
+                    await downloadImage(path,tabUrl[i],i+1)
+                    this.emit('download-page-finished', {path,page:i+1,chapter,source:this.site,manga:manga.name})
                 } catch(e) {
-                    this.emit('download-page-error', {path,page:i,chapter,source:this.site,error:e,manga:manga.name})
+                    this.emit('download-page-error', {path,page:i+1,chapter,source:this.site,error:e,manga:manga.name})
                     throw e
                 }
             }

@@ -15,7 +15,7 @@ export default async function downloadImage(path:string, url:string,page:number)
         response.data.pipe(writer)
         const t = 
         setTimeout(()=> {
-            writer.destroy(new Error('Impossible to download the page '+(page+1)+' Please check your Internet Connection'))
+            writer.destroy(new Error('Impossible to download the page '+(page)+' Please check your Internet Connection'))
         },30000)
         writer.on('finish', () => {
             try {

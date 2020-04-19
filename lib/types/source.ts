@@ -7,7 +7,7 @@ declare interface source {
     url: string,
     mangas: { [name:string]: manga },
     getNumberPageChapter(manga:manga,chapter:number):Promise<number>,
-    getUrlPages(manga:manga,chapter:number,numberPage:number):Promise<string[]>,
+    getUrlPages(manga:manga,chapter:number):Promise<string[]>,
     getLastChapter(manga:manga):Promise<number>,
     chapterIsAvailable(manga:manga,chapter:number) : Promise<boolean>
 }
