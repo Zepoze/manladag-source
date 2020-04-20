@@ -1,13 +1,14 @@
 {
   "name": "@manladag/source",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "manladag parent class",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "test": "mocha --reporter spec",
     "build": "tsc",
-    "cover": "istanbul cover mocha  test/test.js - - -R spec"
+    "cover": "istanbul cover mocha  test/test.js - - -R spec",
+    "prepublish": "tsc"
   },
   "repository": {
     "type": "git",
