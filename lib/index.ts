@@ -108,7 +108,7 @@ export class ManladagSource extends EventEmitter implements source{
      * add a callback when a download's page throw Error
      */
     public addOnDownloadPageErrorListener(listener:onDonwloadPageErrorListener) {
-        this.on('download-page-started', listener)
+        this.on('download-page-error', listener)
     }
 
     /**
