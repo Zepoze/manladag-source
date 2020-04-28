@@ -59,7 +59,7 @@ export class ManladagSource extends EventEmitter implements source{
                 ext = (ext=='.jpg'||ext=='.png')? `${ext}`:'.jpg'
                 path = Path.join(dirDownload,(i<10 ? `0${i+ext}`: `${i+ext}`))
 
-                this.emit('download-page-started', {path,page:i+1,chapter,source:this.site,manga})
+                this.emit('download-page-started', {path,page:i+1,chapter,source:this.site,manga: manga.name})
                 try {
                     await downloadImage(path,tabUrl[i],i+1)
                     this.emit('download-page-finished', {path,page:i+1,chapter,source:this.site,manga:manga.name})
