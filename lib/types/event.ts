@@ -1,14 +1,14 @@
-declare interface argsOnDonwloadPageFinishedListener {path:string,page:number,source:source,manga:string}
+declare interface argsOnDonwloadPageFinishedListener {path:string,page:number,source:source,manga:string,chapter:number}
   declare interface onDonwloadPageFinishedListener {
     (args:argsOnDonwloadPageFinishedListener):void
 }
 
-declare interface argsOnDonwloadPageStartedListener {path:string,page:number,source:source,manga:string}
+declare interface argsOnDonwloadPageStartedListener {path:string,page:number,source:source,manga:string,chapter:number}
 declare interface onDonwloadPageStartedListener {
     (args:argsOnDonwloadPageStartedListener):void
 }
 
-declare interface argsOnDonwloadPageErrorListener {path:string,page:number,source:source,manga:string,error:Error}
+declare interface argsOnDonwloadPageErrorListener {path:string,page:number,source:source,manga:string,error:Error,chapter:number}
   declare interface onDonwloadPageErrorListener {
     (args:argsOnDonwloadPageErrorListener):void
 }
