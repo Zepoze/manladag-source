@@ -71,7 +71,7 @@ export class ManladagSource extends EventEmitter implements source{
             this.emit('download-chapter-finished', {manga:manga.name,numberPage,path:dirDownload,chapter,source:this.site})
 
         } catch (e) {
-            this.emit('download-chapter-error', {chapter,source:this.site,error:e,manga:manga_key})
+            this.emit('download-chapter-error', {chapter,source:this.site,error:e,manga:manga_key, path:dirDownload})
             throw e
         }
     }
