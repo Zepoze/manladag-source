@@ -32,6 +32,24 @@ const testInterface = {
     }
 }
 
+const ThrowInterface = {
+    site: "picsum",
+    url: "https://picsum.photos",
+    mangas: m,
+    async getNumberPageChapter(manga,chapter) {
+        throw new Error('Test Error in getNumberPageChapter')
+    },
+    async getUrlPages(manga,chapter){
+        throw new Error('Test Error in getUrlPages')
+    },
+    async getLastChapter(manga) {
+        throw new Error('Test Error in getLastChapter')
+    },
+    async chapterIsAvailable(manga,chapter) {
+        throw new Error('Test Error in chapterIsAvailable')
+    }
+}
+
 const source = new index(testInterface)
 const tmpDir = Path.join(os.tmpdir(),'manladag-source-testzedrftgyhuj')
 if(!fs.existsSync(tmpDir))fs.mkdirSync(tmpDir)
@@ -39,7 +57,7 @@ if(!fs.existsSync(tmpDir))fs.mkdirSync(tmpDir)
 source.addOnDownloadChapterFinishedListener(({path,chapter,}) => {
     console.log(`chapter n°${chapter} download in -> ${path}`)
 })
-describe('ManladagSource class test', function () {
+describe('ManladagSource class download test', function () {
     this.timeout(30000)
     it("download test",async () => {
         
@@ -65,4 +83,43 @@ describe('ManladagSource class test', function () {
             expect(e.message).to.include(`The chapter 50 is not available on`)
         }
     })
+})
+
+msthrow = new index(ThrowInterface)
+
+describe('ManladagSource fail methods test', function () {
+    this.timeout(30000)
+    it('getLastchapter', async function() {
+        try {
+            await msthrow.getLastChapter(Object.values(msthrow.mangas)[0])
+            expect.fail('yeah')
+        } catch(e) {
+            expect(e).to.include({ name: 'ManladagLibError'})
+        }
+    })
+    it('getNumberpagechapter', async function() {
+        try {
+            await msthrow.getNumberPageChapter(Object.values(msthrow.mangas)[0], 65)
+            expect.fail('yeah')
+        } catch(e) {
+            expect(e).to.include({ name: 'ManladagLibError'}).and.have.property('message').include('Test Error in getNumberPageChapter')
+        }
+    })
+    it('getUrlPages', async function() {
+        try {
+            await msthrow.getUrlPages(Object.values(msthrow.mangas)[0])
+            expect.fail('yeah')
+        } catch(e) {
+            expect(e).to.have.include({ name: 'ManladagLibError'}).and.have.property('message').include('Test Error in getUrlPages')
+        }
+    })
+    it('chapterIsavailable', async function() {
+        try {
+            await msthrow.chapterIsAvailable(Object.values(msthrow.mangas)[0], 65)
+            expect.fail('yeah')
+        } catch(e) {
+            expect(e).to.have.include({ name: 'ManladagLibError'}).and.have.property('message').include('Test Error in chapterIsAvailable')
+        }
+    })
+
 })

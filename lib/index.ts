@@ -2,22 +2,55 @@ import { EventEmitter } from 'events'
 import axios from 'axios'
 import Path from 'path'
 import fs from 'fs'
-import downloadImage from './functions'
+import { downloadImage } from './functions'
+import {source, manga} from './types/source'
+import {
+    argsOnDonwloadChapterErrorListener,
+    argsOnDonwloadChapterFinishedListener,
+    argsOnDonwloadChapterStartedListener,
+    argsOnDonwloadPageErrorListener,
+    argsOnDonwloadPageFinishedListener,
+    argsOnDonwloadPageStartedListener,
+    onDonwloadPageStartedListener,
+    onDonwloadChapterErrorListener,
+    onDonwloadChapterFinishedListener,
+    onDonwloadChapterStartedListener,
+    onDonwloadPageErrorListener,
+    onDonwloadPageFinishedListener
+} from './types/event'
 
-export class ManladagSource extends EventEmitter implements source{
+
+export class ManladagSource extends EventEmitter{
     site:string
     url:string
-    getNumberPageChapter(manga:manga,chapter:number):Promise<number>{
-        return Promise.resolve(0)
+    private source:source
+    async getNumberPageChapter(manga:manga,chapter:number):Promise<number>{
+        try {
+            return await this.source.getNumberPageChapter(manga, chapter)
+        } catch(error) {
+            throw new ManladagLibError(this.source, error)
+        }
     }
-    getUrlPages(manga:manga,chapter:number):Promise<string[]>{
-        return Promise.resolve([])
+    async getUrlPages(manga:manga,chapter:number):Promise<string[]>{
+        try {
+            return await this.source.getUrlPages(manga, chapter)
+        } catch (error) {
+            throw new ManladagLibError(this.source, error)
+        }
     }
-    getLastChapter(manga:manga):Promise<number> {
-        return Promise.resolve(0)
+    async getLastChapter(manga:manga):Promise<number> {
+        try {
+            return await this.source.getLastChapter(manga)
+        } catch(error) {
+            throw new ManladagLibError(this.source, error)
+        }
     }
-    chapterIsAvailable(manga:manga,chapter:number): Promise<boolean> {
-        return Promise.resolve(false)
+    async chapterIsAvailable(manga:manga,chapter:number): Promise<boolean> {
+        try {
+            return await this.source.chapterIsAvailable(manga, chapter)
+        } catch (error) {
+            throw new ManladagLibError(this.source, error)
+        }
     }
     mangas:{ [name:string]: manga }
     constructor( source : source ) {
@@ -25,10 +58,7 @@ export class ManladagSource extends EventEmitter implements source{
         this.site = source.site
         this.url = source.url
         this.mangas = source.mangas
-        this.getNumberPageChapter = source.getNumberPageChapter
-        this.getUrlPages = source.getUrlPages
-        this.chapterIsAvailable = source.chapterIsAvailable
-        this.getLastChapter = source.getLastChapter
+        this.source = source
     }
 
     /**
@@ -136,3 +166,18 @@ export class ManladagSource extends EventEmitter implements source{
     }
 }
 
+export class ManladagLibError extends Error {
+    name:string = 'ManladagLibError'
+    site:string
+    url:string
+    stack:string | undefined
+    constructor(source:source, error:Error) {
+        super(`Error in the lib ${source.site}, Please try to contact his author \n${error.message}`)
+        this.site = source.site
+        this.url = source.url
+
+        if(Error.captureStackTrace) {
+            Error.captureStackTrace(this, ManladagLibError);
+        }
+    }
+}
