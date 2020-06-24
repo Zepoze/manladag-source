@@ -1,47 +1,43 @@
+/// <reference path="./types/source.ts"/>
 import axios from 'axios'
 import fs from 'fs'
-import { source } from './types/source'
 
-export class ManladagLibError extends Error {
-    name:string = 'ManladagLibError'
-    site:string
-    url:string
-    stack:string | undefined
-    constructor(source:source, error:Error) {
-        super(`Error in the lib ${source.site}, Please try to contact his author \n${error.message}`)
-        this.site = source.site
-        this.url = source.url
 
-        if(Error.captureStackTrace) {
-            Error.captureStackTrace(this, ManladagLibError);
-        }
-    }
-}
-
-export async function downloadImage(path:string, url:string,page:number) {
+export function downloadImage(path:string, url:string,page:number) {
+    const TheError:Error = new Error('Impossible to download the page '+(page)+' Please check your Internet Connection')
     return new Promise(async (resolve, reject) => {
         const writer = fs.createWriteStream(path)
-        
-        
-        const response = await axios({
-            url,
-            method: 'GET',
-            responseType: 'stream'
-        })
-       
-    
-        response.data.pipe(writer)
-        const t = 
-        setTimeout(()=> {
-            writer.destroy(new Error('Impossible to download the page '+(page)+' Please check your Internet Connection'))
-        },30000)
-        writer.on('finish', () => {
-            try {
-            clearTimeout(t)
-        } finally {
-            resolve()	
-        }
-        })
         writer.on('error', reject)
-      })
+        let d:number = Date.now()
+        let count = 0
+        try {
+            const { data } = await axios({
+                url,
+                method: 'GET',
+                responseType: 'stream',
+            })
+            
+            data.on('data',()=> d = Date.now())
+            const stI = setInterval(() => {
+                if(Date.now() - d <= 1500) count = 0
+                else count++
+                if(count >2) {
+                    clearInterval(stI)
+                    writer.destroy(TheError)
+                }
+                
+            },1500)
+            writer.on('finish', function() {
+                resolve()
+            })
+            data.pipe(writer)
+
+            
+
+        }catch(e) {
+            reject(e)
+        }
+
+        
+    })
 }

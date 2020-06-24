@@ -1,28 +1,34 @@
-import { EventEmitter } from 'events'
-import axios from 'axios'
-import Path from 'path'
+/// <reference path="./types/index.ts"/>
+
 import fs from 'fs'
-import { downloadImage } from './functions'
-import {source, manga} from './types/source'
-import {
-    argsOnDonwloadChapterErrorListener,
-    argsOnDonwloadChapterFinishedListener,
-    argsOnDonwloadChapterStartedListener,
-    argsOnDonwloadPageErrorListener,
-    argsOnDonwloadPageFinishedListener,
-    argsOnDonwloadPageStartedListener,
-    onDonwloadPageStartedListener,
-    onDonwloadChapterErrorListener,
-    onDonwloadChapterFinishedListener,
-    onDonwloadChapterStartedListener,
-    onDonwloadPageErrorListener,
-    onDonwloadPageFinishedListener
-} from './types/event'
 
+import { ManladagDownload } from './manladagDownload'
+import { ManladagLibError } from './ManladagLibError'
 
-export class ManladagSource extends EventEmitter{
+export namespace _DOWNLOAD {
+    export enum STATE {
+        WAITING_TO_START = 0x01,
+        STARTED = 0x02,
+        WAITING_TO_RESTART = 0x04,
+        WAITING_TO_ABORT = 0x08,
+        FORCE_ABORT = 0x10,
+        FINISHED = 0x20
+    }
+    export enum INIT {
+        AUTO_START = 0b001,
+        NO_AUTO_START = 0b010,
+        CLEAR_EVENTS = 0b100,
+    }
+    export enum ACTION {
+        DONE,
+        NOT_DONE
+    }
+}
+
+export class ManladagSource {
     site:string
     url:string
+    downloadEvents: Manladag.DownloadEvents = {}
     private source:source
     async getNumberPageChapter(manga:manga,chapter:number):Promise<number>{
         try {
@@ -54,7 +60,6 @@ export class ManladagSource extends EventEmitter{
     }
     mangas:{ [name:string]: manga }
     constructor( source : source ) {
-        super()
         this.site = source.site
         this.url = source.url
         this.mangas = source.mangas
@@ -64,46 +69,23 @@ export class ManladagSource extends EventEmitter{
     /**
      * downloadChapter
      */
-    public async downloadChapter(manga_key:string,chapter:number,dirDownload:string) {
-        try {
-            if(chapter<0) throw new Error(`chapter should be a valid number but its '${chapter}'`)
-            if(fs.existsSync(dirDownload)) {
-                if(fs.lstatSync(dirDownload).isFile()) throw new Error(`${dirDownload} is not a directory`)
-            } else {
-                throw new Error(`the directory '${dirDownload}' doesnt exist`)
-            }
-            const manga = this.getManga(manga_key)
-
-            if(!(await this.chapterIsAvailable(manga,chapter))) throw new Error(`The chapter ${chapter} is not available on ${this.site}`)
-
-            const tabUrl:string[] = await this.getUrlPages(manga,chapter)
-
-            const numberPage:number = tabUrl.length
-
-            let path:string,ext:string
-
-            this.emit('download-chapter-started', {manga:manga.name,numberPage,path:dirDownload,chapter,source:this.site})
-
-            for(let i =0;i<numberPage;i++) {
-                ext = Path.extname(Path.basename(tabUrl[i]))
-                ext = (ext=='.jpg'||ext=='.png')? `${ext}`:'.jpg'
-                path = Path.join(dirDownload,(i<10 ? `0${i+ext}`: `${i+ext}`))
-
-                this.emit('download-page-started', {path,page:i+1,chapter,source:this.site,manga: manga.name})
-                try {
-                    await downloadImage(path,tabUrl[i],i+1)
-                    this.emit('download-page-finished', {path,page:i+1,chapter,source:this.site,manga:manga.name})
-                } catch(e) {
-                    this.emit('download-page-error', {path,page:i+1,chapter,source:this.site,error:e,manga:manga.name})
-                    throw e
-                }
-            }
-            this.emit('download-chapter-finished', {manga:manga.name,numberPage,path:dirDownload,chapter,source:this.site})
-
-        } catch (e) {
-            this.emit('download-chapter-error', {chapter,source:this.site,error:e,manga:manga_key, path:dirDownload})
-            throw e
+    public async downloadChapter(manga_key:string,chapter:number,dirDownload:string, flag:number) {
+        
+        if(chapter<0) throw new Error(`chapter should be a valid number but its '${chapter}'`)
+        if(fs.existsSync(dirDownload)) {
+            if(fs.lstatSync(dirDownload).isFile()) throw new Error(`${dirDownload} is not a directory`)
+        } else {
+            throw new Error(`the directory '${dirDownload}' doesnt exist`)
         }
+        const manga = this.getManga(manga_key)
+
+        if(!(await this.chapterIsAvailable(manga,chapter))) throw new Error(`The chapter ${chapter} is not available on ${this.site}`)
+
+        const tabUrl:string[] = await this.getUrlPages(manga,chapter)
+
+        return new ManladagDownload({ site: this.site, url: this.url}, manga, chapter, tabUrl, dirDownload, { flag, events: this.downloadEvents })
+
+            
     }
 
     /**
@@ -118,66 +100,72 @@ export class ManladagSource extends EventEmitter{
         Manage events
     */
     /**
-     * addOnDownloadPageFinishedListener
-     *  add a callback when a download's page finished
+     * setOnDownloadPageFinishedListener
+     *   set a callback when a download's page finished
      */
-    public addOnDownloadPageFinishedListener(listener:onDonwloadPageFinishedListener) {
-        this.on('download-page-finished', listener)
+    public setOnDownloadPageFinishedListener(listener: Manladag.Download.Events.onDonwloadPageFinishedListener) {
+        this.downloadEvents.onDonwloadPageFinishedListener = listener
+        return this
     }
 
     /**
-     * addOnDownloadPageStartedListener
-     * add a callback when a download's page started
+     *  setOnDownloadPageStartedListener
+     *  set a callback when a download's page started
      */
-    public addOnDownloadPageStartedListener(listener:onDonwloadPageStartedListener) {
-        this.on('download-page-started', listener)
+    public  setOnDownloadPageStartedListener(listener: Manladag.Download.Events.onDonwloadPageStartedListener) {
+        this.downloadEvents.onDonwloadPageStartedListener = listener
+        return this
     }
 
     /**
-     * addOnDownloadPageErrorListener
-     * add a callback when a download's page throw Error
+     *  setOnDownloadPageErrorListener
+     *  set a callback when a download's page throw Error
      */
-    public addOnDownloadPageErrorListener(listener:onDonwloadPageErrorListener) {
-        this.on('download-page-error', listener)
+    public  setOnDownloadPageErrorListener(listener: Manladag.Download.Events.onDonwloadPageErrorListener) {
+        this.downloadEvents.onDonwloadPageErrorListener = listener
+        return this
     }
 
     /**
-     * addOnDownloadChapterStartedListener
-     * add a callback when a download's chapter started
+     *  setOnDownloadChapterStartedListener
+     *  set a callback when a download's chapter started
      */
-    public addOnDownloadChapterStartedListener(listener:onDonwloadChapterStartedListener) {
-        this.on('download-chapter-started', listener)
+    public  setOnDownloadChapterStartedListener(listener: Manladag.Download.Events.onDonwloadChapterStartedListener) {
+        this.downloadEvents.onDonwloadChapterStartedListener = listener
+        return this
     }
 
     /**
-     * addOnDownloadChapterFinishedListener
-     * add a callback when a download's page finished
+     *  setOnDownloadChapterFinishedListener
+     *  set a callback when a download's page finished
      */
-    public addOnDownloadChapterFinishedListener(listener:onDonwloadChapterFinishedListener) {
-        this.on('download-chapter-finished', listener)
+    public  setOnDownloadChapterFinishedListener(listener: Manladag.Download.Events.onDonwloadChapterFinishedListener) {
+        this.downloadEvents.onDonwloadChapterFinishedListener = listener
+        return this
     }
 
     /**
-     * addOnDownloadChapterErrorListener
-     * add a callback when a download's chapter throw Error
+     *  setOnDownloadChapterErrorListener
+     *  set a callback when a download's chapter throw Error
      */
-    public addOnDownloadChapterErrorListener(listener:onDonwloadChapterErrorListener) {
-        this.on('download-chapter-error', listener)
+    public  setOnDownloadChapterErrorListener(listener:Manladag.Download.Events.onDonwloadChapterErrorListener) {
+        this.downloadEvents.onDonwloadChapterErrorListener = listener
+        return this
     }
-}
 
-export class ManladagLibError extends Error {
-    name:string = 'ManladagLibError'
-    site:string
-    url:string
-    stack:string | undefined
-    constructor(source:source, error:Error) {
-        super(`Error in the lib ${source.site}, Please try to contact his author \n${error.message}`)
-        this.site = source.site
-        this.url = source.url
+    /**
+     *  setOnDonwloadChapterAbortedListener
+     */
+    public  setOnDonwloadChapterAbortedListener(listener: Manladag.Download.Events.onDonwloadChapterAbortedListener) {
+        this.downloadEvents.onDonwloadChapterAbortedListener = listener
+        return this
+    }
 
-        if(Error.captureStackTrace) {
-            Error.captureStackTrace(this, ManladagLibError);
-        }
+    /**
+     *  setOnDonwloadChapterRestartedListener
+     */
+    public  setOnDonwloadChapterRestartedListener(listener: Manladag.Download.Events.onDonwloadChapterRestartedListener) {
+        this.downloadEvents.onDonwloadChapterRestartedListener = listener
+        return this
     }
 }

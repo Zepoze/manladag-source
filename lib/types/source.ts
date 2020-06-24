@@ -1,8 +1,8 @@
-export declare interface manga {
+interface manga {
     name: string
 }
 
-export declare interface source {
+interface source {
     site: string,
     url: string,
     mangas: { [name:string]: manga },
