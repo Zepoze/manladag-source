@@ -1,6 +1,8 @@
 
 import { EventEmitter } from 'events'
 import Path from 'path'
+import fs, { lstatSync } from 'fs'
+import AdmZip from 'adm-zip'
 
 import { downloadImage } from './functions'
 import { _DOWNLOAD } from '.'
@@ -15,7 +17,10 @@ export class ManladagDownload extends EventEmitter{
     state: number = _DOWNLOAD.STATE.WAITING_TO_START
     tryCount = 0
     maxTry = 1
-    constructor(source: { site:string, url:string }, manga: manga, chapter: number, pagesUrl: string[], dirDownload:string, opts: { events?: Manladag.DownloadEvents, flag?:number }) {
+
+    private mlagPath: string |undefined
+
+    constructor(source: { site:string, url:string }, manga: manga, chapter: number, pagesUrl: string[], dirDownload:string, opts: { events?: Manladag.DownloadEvents, flag?:number, mlag?: string }) {
         super()
         this.site = source.site
         this.url = source.url
@@ -23,7 +28,7 @@ export class ManladagDownload extends EventEmitter{
         this.dirDownload = dirDownload
         this.manga = manga
         this.chapter = chapter
-
+        this.setMlagPtah(opts.mlag)
 
         if(opts.events) {
             if(opts.events.onDonwloadPageStartedListener) this.setOnDownloadPageStartedListener(opts.events.onDonwloadPageStartedListener)
@@ -56,16 +61,14 @@ export class ManladagDownload extends EventEmitter{
         const numberPage = this.pagesUrl.length
         try {
             this.state = _DOWNLOAD.STATE.STARTED
-            let path:string,ext:string
+            let path:string
 
             this.emit('download-chapter-started', {manga:this.manga.name,numberPage,path:this.dirDownload,chapter: this.chapter,source:this.site})
 
             for(let i =0;i<numberPage;i++) {
                 if(this.state & _DOWNLOAD.STATE.WAITING_TO_ABORT)
-                    break
-                ext = Path.extname(Path.basename(this.pagesUrl[i]))
-                ext = (ext=='.jpg'||ext=='.png')? `${ext}`:'.jpg'
-                path = Path.join(this.dirDownload,(i<10 ? `0${i+ext}`: `${i+ext}`))
+                    break  
+                path = this._getPageUrlPath(i)
 
                 this.emit('download-page-started', {path,page:i+1,chapter: this.chapter,source:this.site,manga: this.manga.name, numberPage})
                 try {
@@ -88,8 +91,11 @@ export class ManladagDownload extends EventEmitter{
                 
             }
             else {
+                if(this.mlagPath) {
+                    this._mlag()
+                }
                 this.state = _DOWNLOAD.STATE.FINISHED
-                this.emit('download-chapter-finished', {manga:this.manga.name,numberPage,path:this.dirDownload,chapter: this.chapter,source:this.site})
+                this.emit('download-chapter-finished', {manga:this.manga.name,numberPage,path:this.mlagPath? this.mlagPath : this.dirDownload,chapter: this.chapter,source:this.site})
                 this.reset()
             }
             return null
@@ -136,7 +142,71 @@ export class ManladagDownload extends EventEmitter{
         await downloadImage(path, url, page)        
     }
 
-    // SETTERS
+    private _mlag() {
+        const infos = {
+            "site": this.site,
+            "url": this.url,
+            "manga": this.manga,
+            "chapter": this.chapter,
+            "download-date": ((date:number) => {
+                let d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+            
+                if(month.length < 2) 
+                    month = '0' + month;
+                if(day.length < 2) 
+                    day = '0' + day;
+            
+                return [year, month, day].join('-');
+            })(Date.now()),
+            "pages-number": this.pagesUrl.length
+        }
+
+        const zip = new AdmZip()
+        zip.addFile('manifest.json', new Buffer(JSON.stringify(infos,null,"\t")), "Manifest Entry")
+        for(let i = 0;i<this.pagesUrl.length;i++) {
+            zip.addLocalFile(this._getPageUrlPath(i))
+        }
+        zip.writeZip(this.mlagPath)
+        for(let i = 0;i<this.pagesUrl.length;i++) {
+            fs.unlinkSync(this._getPageUrlPath(i))
+        }
+        
+    }
+
+    private _getPageUrlPath(pageUrlIndex:number) {
+        let ext = Path.extname(Path.basename(this.pagesUrl[pageUrlIndex]))
+        ext = (ext=='.jpg'||ext=='.png')? `${ext}`:'.jpg'
+        return Path.join(this.dirDownload,(pageUrlIndex<10 ? `0${pageUrlIndex+ext}`: `${pageUrlIndex+ext}`))
+    }
+
+
+    //SETTERS
+    public setMlagPtah(filename:string|undefined) {
+        if(filename) {
+            const mlag = filename+'.mlag'
+            console.log(mlag)
+            if(!fs.existsSync(mlag)) {
+                let tmp
+                if(!fs.existsSync(tmp = Path.join(mlag,'..'))) throw new Error(`The directorie ${tmp} doesn't exist`)
+            }
+            else {
+                if(fs.lstatSync(mlag).isDirectory()) throw new Error(`the path ${mlag} is a directorie that already exist`)
+            }
+            this.mlagPath = mlag
+            console.log('done')
+        }
+    }
+
+    //GETTERS
+    public getMlagPath() {
+        return this.mlagPath
+    }
+
+
+    // SETTERS EVENTS
     public setOnDownloadPageStartedListener(listener: Manladag.Download.Events.onDonwloadPageStartedListener) {
         return this.on('download-page-started', listener)
     }

@@ -1,6 +1,6 @@
 {
   "name": "@manladag/source",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "manladag parent class",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Zepoze/manladag-source#readme",
   "devDependencies": {
+    "@types/adm-zip": "^0.4.33",
     "@types/node": "^13.11.0",
     "chai": "^4.2.0",
     "coveralls": "^3.0.11",
@@ -31,6 +32,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "adm-zip": "^0.4.16",
     "axios": "^0.19.2"
   }
 }

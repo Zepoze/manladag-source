@@ -69,7 +69,7 @@ export class ManladagSource {
     /**
      * downloadChapter
      */
-    public async downloadChapter(manga_key:string,chapter:number,dirDownload:string, flag:number) {
+    public async downloadChapter(manga_key:string,chapter:number,dirDownload:string, flag:number, opts:{ mlag?:string } = {}) {
         
         if(chapter<0) throw new Error(`chapter should be a valid number but its '${chapter}'`)
         if(fs.existsSync(dirDownload)) {
@@ -83,9 +83,8 @@ export class ManladagSource {
 
         const tabUrl:string[] = await this.getUrlPages(manga,chapter)
 
-        return new ManladagDownload({ site: this.site, url: this.url}, manga, chapter, tabUrl, dirDownload, { flag, events: this.downloadEvents })
-
-            
+        return new ManladagDownload({ site: this.site, url: this.url}, manga, chapter, tabUrl, dirDownload, { flag, events: this.downloadEvents, mlag: opts.mlag })
+      
     }
 
     /**
