@@ -187,7 +187,6 @@ export class ManladagDownload extends EventEmitter{
     public setMlagPtah(filename:string|undefined) {
         if(filename) {
             const mlag = filename+'.mlag'
-            console.log(mlag)
             if(!fs.existsSync(mlag)) {
                 let tmp
                 if(!fs.existsSync(tmp = Path.join(mlag,'..'))) throw new Error(`The directorie ${tmp} doesn't exist`)
@@ -196,7 +195,6 @@ export class ManladagDownload extends EventEmitter{
                 if(fs.lstatSync(mlag).isDirectory()) throw new Error(`the path ${mlag} is a directorie that already exist`)
             }
             this.mlagPath = mlag
-            console.log('done')
         }
     }
 
