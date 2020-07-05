@@ -8,15 +8,15 @@ import { downloadImage } from './functions'
 import { _DOWNLOAD } from '.'
 
 export class ManladagDownload extends EventEmitter{
-    dirDownload:string
-    manga:manga
-    chapter:number
-    site: string
-    url: string
-    pagesUrl: string[]
-    state: number = _DOWNLOAD.STATE.WAITING_TO_START
-    tryCount = 0
-    maxTry = 1
+    readonly dirDownload:string
+    readonly manga:manga
+    readonly chapter:number
+    readonly site: string
+    readonly url: string
+    readonly pagesUrl: string[]
+    private state: number = _DOWNLOAD.STATE.WAITING_TO_START
+    private tryCount = 0
+    private maxTry = 1
 
     private mlagPath: string |undefined
 
@@ -215,6 +215,12 @@ export class ManladagDownload extends EventEmitter{
     //GETTERS
     public getMlagPath() {
         return this.mlagPath
+    }
+    /**
+     * Get the state of the download
+     */
+    public getState() {
+        return this.state
     }
 
 

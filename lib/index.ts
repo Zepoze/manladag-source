@@ -26,9 +26,9 @@ export namespace _DOWNLOAD {
 }
 
 export class ManladagSource {
-    site:string
-    url:string
-    downloadEvents: Manladag.DownloadEvents = {}
+    readonly site:string
+    readonly url:string
+    readonly downloadEvents: Manladag.DownloadEvents = {}
     private source:source
 
     /**
