@@ -30,30 +30,94 @@ export class ManladagSource {
     url:string
     downloadEvents: Manladag.DownloadEvents = {}
     private source:source
-    async getNumberPageChapter(manga:manga,chapter:number):Promise<number>{
+
+    /**
+     * Get asynchronously the number of page corresponding to the given chapter and manga
+     * @param mangaKey 
+     * @param chapter 
+     */
+
+    public async getNumberPageChapter(mangaKey:string,chapter:number):Promise<number>
+
+    /**
+     * 
+     * @param manga 
+     * @param chapter
+     * @deprecated 
+     */
+
+    public async getNumberPageChapter(mangaKey:manga,chapter:number):Promise<number>
+
+    public async getNumberPageChapter(manga:manga|string,chapter:number):Promise<number>{
         try {
-            return await this.source.getNumberPageChapter(manga, chapter)
+            return await this.source.getNumberPageChapter(typeof manga == 'string' ? this.getManga(manga) : manga, chapter)
         } catch(error) {
             throw new ManladagLibError(this.source, error)
         }
     }
-    async getUrlPages(manga:manga,chapter:number):Promise<string[]>{
+
+    /**
+     * Get asynchronously the pages urls corresponding to a given manga and chapter
+     * @param manga 
+     * @param chapter 
+     */
+    public async getUrlPages(manga:string,chapter:number):Promise<string[]>
+
+    /**
+     * 
+     * @param manga 
+     * @param chapter 
+     * @deprecated
+     */
+    public async getUrlPages(manga:manga,chapter:number):Promise<string[]>
+
+    public async getUrlPages(manga:manga|string,chapter:number):Promise<string[]>{
         try {
-            return await this.source.getUrlPages(manga, chapter)
+            return await this.source.getUrlPages(typeof manga == 'string' ? this.getManga(manga) : manga, chapter)
         } catch (error) {
             throw new ManladagLibError(this.source, error)
         }
     }
-    async getLastChapter(manga:manga):Promise<number> {
+
+    /**
+     * Get asynchronously the last chapter available to download corresponding to a given manga
+     * @param manga 
+     */
+    public async getLastChapter(manga:string):Promise<number>
+
+    /**
+     * 
+     * @param manga 
+     * @deprecated
+     */
+    public async getLastChapter(manga:manga):Promise<number>
+
+    public async getLastChapter(manga:manga|string):Promise<number> {
         try {
-            return await this.source.getLastChapter(manga)
+            return await this.source.getLastChapter(typeof manga == 'string' ? this.getManga(manga) : manga)
         } catch(error) {
             throw new ManladagLibError(this.source, error)
         }
     }
-    async chapterIsAvailable(manga:manga,chapter:number): Promise<boolean> {
+
+    /**
+     * Return true if the given manga's chapter is available to download
+     * @param manga 
+     * @param chapter 
+     */
+    public async chapterIsAvailable(manga:string,chapter:number): Promise<boolean>
+
+    /**
+     * 
+     * @param manga 
+     * @param chapter 
+     * @deprecated
+     */
+    public async chapterIsAvailable(manga:manga,chapter:number): Promise<boolean>
+
+    public async chapterIsAvailable(manga:manga|string,chapter:number): Promise<boolean> {
         try {
-            return await this.source.chapterIsAvailable(manga, chapter)
+            return await this.source.chapterIsAvailable(typeof manga == 'string' ? this.getManga(manga) : manga, chapter)
         } catch (error) {
             throw new ManladagLibError(this.source, error)
         }
@@ -67,7 +131,11 @@ export class ManladagSource {
     }
 
     /**
-     * downloadChapter
+     * Download the given mang chapter in dirDownload
+     * @param manga_key 
+     * @param chapter 
+     * @param dirDownload 
+     * @param flag Flag  _DOWNLOAD.INIT
      */
     public async downloadChapter(manga_key:string,chapter:number,dirDownload:string, flag:number, opts:{ mlag?:string } = {}) {
         
@@ -88,7 +156,8 @@ export class ManladagSource {
     }
 
     /**
-     * getManga
+     * Get manga from key
+     * manga_key = typeof Object.keys(this.mngas)
      */
     public getManga(manga_key:string):manga {
         const m = this.mangas[manga_key]
@@ -99,8 +168,7 @@ export class ManladagSource {
         Manage events
     */
     /**
-     * setOnDownloadPageFinishedListener
-     *   set a callback when a download's page finished
+     *   Set a callback when a download's page finished
      */
     public setOnDownloadPageFinishedListener(listener: Manladag.Download.Events.onDonwloadPageFinishedListener) {
         this.downloadEvents.onDonwloadPageFinishedListener = listener
@@ -108,8 +176,7 @@ export class ManladagSource {
     }
 
     /**
-     *  setOnDownloadPageStartedListener
-     *  set a callback when a download's page started
+     *  Set a callback when a download's page started
      */
     public  setOnDownloadPageStartedListener(listener: Manladag.Download.Events.onDonwloadPageStartedListener) {
         this.downloadEvents.onDonwloadPageStartedListener = listener
@@ -117,8 +184,7 @@ export class ManladagSource {
     }
 
     /**
-     *  setOnDownloadPageErrorListener
-     *  set a callback when a download's page throw Error
+     *  Set a callback when a download's page throw Error
      */
     public  setOnDownloadPageErrorListener(listener: Manladag.Download.Events.onDonwloadPageErrorListener) {
         this.downloadEvents.onDonwloadPageErrorListener = listener
@@ -126,8 +192,7 @@ export class ManladagSource {
     }
 
     /**
-     *  setOnDownloadChapterStartedListener
-     *  set a callback when a download's chapter started
+     *  Set a callback when a download's chapter started
      */
     public  setOnDownloadChapterStartedListener(listener: Manladag.Download.Events.onDonwloadChapterStartedListener) {
         this.downloadEvents.onDonwloadChapterStartedListener = listener
@@ -135,8 +200,7 @@ export class ManladagSource {
     }
 
     /**
-     *  setOnDownloadChapterFinishedListener
-     *  set a callback when a download's page finished
+     *  Set a callback when a download's page finished
      */
     public  setOnDownloadChapterFinishedListener(listener: Manladag.Download.Events.onDonwloadChapterFinishedListener) {
         this.downloadEvents.onDonwloadChapterFinishedListener = listener
@@ -144,8 +208,7 @@ export class ManladagSource {
     }
 
     /**
-     *  setOnDownloadChapterErrorListener
-     *  set a callback when a download's chapter throw Error
+     *  Set a callback when a download's chapter throw Error
      */
     public  setOnDownloadChapterErrorListener(listener:Manladag.Download.Events.onDonwloadChapterErrorListener) {
         this.downloadEvents.onDonwloadChapterErrorListener = listener
@@ -153,7 +216,7 @@ export class ManladagSource {
     }
 
     /**
-     *  setOnDonwloadChapterAbortedListener
+     *      Set a callback when a download's chapter aborted
      */
     public  setOnDonwloadChapterAbortedListener(listener: Manladag.Download.Events.onDonwloadChapterAbortedListener) {
         this.downloadEvents.onDonwloadChapterAbortedListener = listener
@@ -161,7 +224,7 @@ export class ManladagSource {
     }
 
     /**
-     *  setOnDonwloadChapterRestartedListener
+     *  Set a callback when a download's chapter restarted
      */
     public  setOnDonwloadChapterRestartedListener(listener: Manladag.Download.Events.onDonwloadChapterRestartedListener) {
         this.downloadEvents.onDonwloadChapterRestartedListener = listener

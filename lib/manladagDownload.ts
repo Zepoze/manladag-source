@@ -44,7 +44,10 @@ export class ManladagDownload extends EventEmitter{
         if((opts.flag ? opts.flag : _DOWNLOAD.INIT.AUTO_START) & _DOWNLOAD.INIT.AUTO_START )
             this.start()
     }
-
+    /**
+     * Start the download when possible
+     * @param {number} [maxRestart=0] the maximum number of times the download can be restarted if it does not succeed
+     */
     public start(maxRestart = 0){
         if(this.state & (_DOWNLOAD.STATE.WAITING_TO_START | _DOWNLOAD.STATE.FINISHED)) {
             this.reset()
@@ -111,6 +114,9 @@ export class ManladagDownload extends EventEmitter{
         }
     }
 
+    /**
+     * Abort the download when possible
+     */
     public abort() {
         if(this.state & (_DOWNLOAD.STATE.STARTED | _DOWNLOAD.STATE.WAITING_TO_RESTART | _DOWNLOAD.STATE.WAITING_TO_ABORT)) {
             if(this.state & _DOWNLOAD.STATE.WAITING_TO_ABORT) this.state = _DOWNLOAD.STATE.FORCE_ABORT
@@ -120,7 +126,11 @@ export class ManladagDownload extends EventEmitter{
             return _DOWNLOAD.ACTION.NOT_DONE
         }
     }
-     public restart() {
+
+    /**
+     * Restart the download when possible
+     */
+    public restart() {
          if(this.state & _DOWNLOAD.STATE.STARTED) {
             this.state = _DOWNLOAD.STATE.WAITING_TO_RESTART
             return this.abort()
@@ -184,18 +194,22 @@ export class ManladagDownload extends EventEmitter{
 
 
     //SETTERS
+    /**
+     * Set the path where the download will be compressed to a mlag file
+     * @param filename the path of the filename without extension if undefined the download will not be compressed
+     */
     public setMlagPtah(filename:string|undefined) {
+        const mlag = filename+'.mlag'
         if(filename) {
-            const mlag = filename+'.mlag'
             if(!fs.existsSync(mlag)) {
                 let tmp
-                if(!fs.existsSync(tmp = Path.join(mlag,'..'))) throw new Error(`The directorie ${tmp} doesn't exist`)
+                if(!fs.existsSync(tmp = Path.join(mlag,'..'))) throw new Error(`The directory ${tmp} doesn't exist`)
             }
             else {
                 if(fs.lstatSync(mlag).isDirectory()) throw new Error(`the path ${mlag} is a directorie that already exist`)
             }
             this.mlagPath = mlag
-        }
+        } else this.mlagPath = mlag
     }
 
     //GETTERS
@@ -205,34 +219,66 @@ export class ManladagDownload extends EventEmitter{
 
 
     // SETTERS EVENTS
+    /**
+     * Set a callback when a download's page started
+     * @param listener 
+     */
     public setOnDownloadPageStartedListener(listener: Manladag.Download.Events.onDonwloadPageStartedListener) {
         return this.on('download-page-started', listener)
     }
 
+    /**
+     * Set a callback when a download's page finished
+     * @param listener 
+     */
     public setOnDownloadPageFinishedListener(listener: Manladag.Download.Events.onDonwloadPageFinishedListener) {
         return this.on('download-page-finished', listener)
     }
 
+    /**
+     * Set a callback when a download's page throw error
+     * @param listener 
+     */
     public setOnDownloadPageErrorListener(listener: Manladag.Download.Events.onDonwloadPageErrorListener) {
         return this.on('download-page-error', listener)
     }
 
+    /**
+     * Set a callback when a download's chapter started
+     * @param listener 
+     */
     public setOnDownloadChapterStartedListener(listener: Manladag.Download.Events.onDonwloadChapterStartedListener): this {
         return this.on('download-chapter-started', listener)
     }
 
+    /**
+     * Set a callback when a download's chapter finished
+     * @param listener 
+     */
     public setOnDownloadChapterFinishedListener(listener: Manladag.Download.Events.onDonwloadChapterFinishedListener) {
         return this.on('download-chapter-finished', listener)
     }
 
+    /**
+     * Set a callback when a download's chapter aborted
+     * @param listener 
+     */
     public setOnDownloadChapterAbortedListener(listener: Manladag.Download.Events.onDonwloadChapterAbortedListener) {
         return this.on('download-chapter-aborted', listener)
     }
 
+    /**
+     * Set a callback when a download's chapter restarted
+     * @param listener 
+     */
     public setOnDownloadChapterRestartedListener(listener: Manladag.Download.Events.onDonwloadChapterRestartedListener) {
         return this.on('download-chapter-restarted', listener)
     }
 
+    /**
+     * Set a callback when a download's chapter throw error
+     * @param listener 
+     */
     public setOnDownloadChapterErrorListener(listener:Manladag.Download.Events.onDonwloadChapterErrorListener) {
         return this.on('download-chapter-error', listener)
     }
