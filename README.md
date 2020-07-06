@@ -12,9 +12,10 @@ your favorite source is missing ? See below
 # Create your own library's Source
 A tutorial will soon be written about it. For now you can learn how to do it with [Github/manladag-lelscanv](https://github.com/Zepoze/manladag-lelscanv)
 # ManladagSource API
-Coming soon
+Visit the [wiki](https://github.com/Zepoze/manladag-source/wiki/ManladagSource-API)
 
-~~~~
+# Trick
+
 A warnings can appear if you try to run with node [#issue](https://github.com/Zepoze/manladag-source/issues/4)
 so use this command
 ~~~~bash
