@@ -209,7 +209,7 @@ export class ManladagDownload extends EventEmitter{
                 if(fs.lstatSync(mlag).isDirectory()) throw new Error(`the path ${mlag} is a directorie that already exist`)
             }
             this.mlagPath = mlag
-        } else this.mlagPath = mlag
+        } else this.mlagPath = undefined
     }
 
     //GETTERS

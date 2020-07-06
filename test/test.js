@@ -394,6 +394,8 @@ describe('Download test',function() {
         
     })
     describe("DownloadImage test", function() {
+        this.timeout(10000)
+        this.slow(8000)
         before(function() {
         })
         it("download", async function() {
