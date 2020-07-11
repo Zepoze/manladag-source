@@ -156,7 +156,7 @@ export class ManladagDownload extends EventEmitter{
         const infos = {
             "site": this.site,
             "url": this.url,
-            "manga": this.manga,
+            "manga": {name: this.manga.name},
             "chapter": this.chapter,
             "download-date": ((date:number) => {
                 let d = new Date(date),
@@ -171,7 +171,8 @@ export class ManladagDownload extends EventEmitter{
             
                 return [year, month, day].join('-');
             })(Date.now()),
-            "pages-number": this.pagesUrl.length
+            "pages-number": this.pagesUrl.length,
+            "manifest-version": "1.0.0"
         }
 
         const zip = new AdmZip()

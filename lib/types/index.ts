@@ -106,3 +106,13 @@ namespace Manladag {
     
   }
 }
+
+interface MlagManifestProperties {
+  site:string,
+  url:string,
+  manga:manga,
+  chapter: number,
+  "pages-number": number,
+  "download-date": string,
+  "manifest-version": string
+}

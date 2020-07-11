@@ -4,6 +4,7 @@ import fs from 'fs'
 
 import { ManladagDownload } from './manladagDownload'
 import { ManladagLibError } from './ManladagLibError'
+import MlagZip from './ClassMlagZip'
 
 export namespace _DOWNLOAD {
     export enum STATE {
@@ -163,6 +164,10 @@ export class ManladagSource {
         const m = this.mangas[manga_key]
         if(typeof(m)=="undefined") throw new Error(`The manga_key '${manga_key}' isn't exist in ${this.site}'lib`)
         return m
+    }
+
+    public getMlagZip(filename:string): MlagZip {
+        return new MlagZip(filename)
     }
     /*
         Manage events
