@@ -166,7 +166,7 @@ export class ManladagSource {
         return m
     }
 
-    public getMlagZip(filename:string): MlagZip {
+    static getMlagZip(filename:string): MlagZip {
         return new MlagZip(filename)
     }
     /*
