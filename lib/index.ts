@@ -4,7 +4,7 @@ import fs from 'fs'
 
 import { ManladagDownload } from './manladagDownload'
 import { ManladagLibError } from './ManladagLibError'
-import MlagZip from './ClassMlagZip'
+import ClassMlagZip from './ClassMlagZip'
 
 export namespace _DOWNLOAD {
     export enum STATE {
@@ -165,10 +165,6 @@ export class ManladagSource {
         if(typeof(m)=="undefined") throw new Error(`The manga_key '${manga_key}' isn't exist in ${this.site}'lib`)
         return m
     }
-
-    static getMlagZip(filename:string): MlagZip {
-        return new MlagZip(filename)
-    }
     /*
         Manage events
     */
@@ -235,4 +231,8 @@ export class ManladagSource {
         this.downloadEvents.onDonwloadChapterRestartedListener = listener
         return this
     }
+}
+
+export class MlagZip extends ClassMlagZip {
+
 }

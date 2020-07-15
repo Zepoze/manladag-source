@@ -394,7 +394,7 @@ describe('Download test',function() {
         
     })
     describe("DownloadImage test", function() {
-        this.timeout(10000)
+        this.timeout(20000)
         this.slow(8000)
         before(function() {
         })
