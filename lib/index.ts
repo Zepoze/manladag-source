@@ -123,6 +123,18 @@ export class ManladagSource {
             throw new ManladagLibError(this.source, error)
         }
     }
+
+    public async getChaptersAvailable(manga:manga, fromChapter:number, toChapter:number): Promise<number[]> 
+    public async getChaptersAvailable(manga:manga|string, fromChapter:number, toChapter:number): Promise<number[]>{
+        if(!this.source.getChaptersAvailable) throw new Error(`The source ${this.source.site} dont implement the function \`getChaptersAvailable\` `)
+    
+        try {
+            return this.source.getChaptersAvailable!(typeof manga == 'string' ? this.getManga(manga) : manga,fromChapter,toChapter)
+        } catch (error) {
+            throw new ManladagLibError(this.source, error)
+        }
+    }
+
     mangas:{ [name:string]: manga }
     constructor( source : source ) {
         this.site = source.site
