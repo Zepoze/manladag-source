@@ -1,10 +1,9 @@
-/// <reference path="./types/index.ts"/>
-
 import fs from 'fs'
-
 import { ManladagDownload } from './manladagDownload'
 import { ManladagLibError } from './ManladagLibError'
 import ClassMlagZip from './ClassMlagZip'
+import { Manladag } from './manladag-namespace'
+export {Manladag} from './manladag-namespace'
 
 export namespace _DOWNLOAD {
     export enum STATE {
@@ -30,7 +29,7 @@ export class ManladagSource {
     readonly site:string
     readonly url:string
     readonly downloadEvents: Manladag.DownloadEvents = {}
-    private source:source
+    private source:Manladag.source
 
     /**
      * Get asynchronously the number of page corresponding to the given chapter and manga
@@ -47,9 +46,9 @@ export class ManladagSource {
      * @deprecated 
      */
 
-    public async getNumberPageChapter(mangaKey:manga,chapter:number):Promise<number>
+    public async getNumberPageChapter(mangaKey:Manladag.manga,chapter:number):Promise<number>
 
-    public async getNumberPageChapter(manga:manga|string,chapter:number):Promise<number>{
+    public async getNumberPageChapter(manga:Manladag.manga|string,chapter:number):Promise<number>{
         try {
             return await this.source.getNumberPageChapter(typeof manga == 'string' ? this.getManga(manga) : manga, chapter)
         } catch(error) {
@@ -70,9 +69,9 @@ export class ManladagSource {
      * @param chapter 
      * @deprecated
      */
-    public async getUrlPages(manga:manga,chapter:number):Promise<string[]>
+    public async getUrlPages(manga:Manladag.manga,chapter:number):Promise<string[]>
 
-    public async getUrlPages(manga:manga|string,chapter:number):Promise<string[]>{
+    public async getUrlPages(manga:Manladag.manga|string,chapter:number):Promise<string[]>{
         try {
             return await this.source.getUrlPages(typeof manga == 'string' ? this.getManga(manga) : manga, chapter)
         } catch (error) {
@@ -91,9 +90,9 @@ export class ManladagSource {
      * @param manga 
      * @deprecated
      */
-    public async getLastChapter(manga:manga):Promise<number>
+    public async getLastChapter(manga:Manladag.manga):Promise<number>
 
-    public async getLastChapter(manga:manga|string):Promise<number> {
+    public async getLastChapter(manga:Manladag.manga|string):Promise<number> {
         try {
             return await this.source.getLastChapter(typeof manga == 'string' ? this.getManga(manga) : manga)
         } catch(error) {
@@ -114,9 +113,9 @@ export class ManladagSource {
      * @param chapter 
      * @deprecated
      */
-    public async chapterIsAvailable(manga:manga,chapter:number): Promise<boolean>
+    public async chapterIsAvailable(manga:Manladag.manga,chapter:number): Promise<boolean>
 
-    public async chapterIsAvailable(manga:manga|string,chapter:number): Promise<boolean> {
+    public async chapterIsAvailable(manga:Manladag.manga|string,chapter:number): Promise<boolean> {
         try {
             return await this.source.chapterIsAvailable(typeof manga == 'string' ? this.getManga(manga) : manga, chapter)
         } catch (error) {
@@ -124,8 +123,8 @@ export class ManladagSource {
         }
     }
 
-    public async getChaptersAvailable(manga:manga, fromChapter:number, toChapter:number): Promise<number[]> 
-    public async getChaptersAvailable(manga:manga|string, fromChapter:number, toChapter:number): Promise<number[]>{
+    public async getChaptersAvailable(manga:Manladag.manga, fromChapter:number, toChapter:number): Promise<number[]> 
+    public async getChaptersAvailable(manga:Manladag.manga|string, fromChapter:number, toChapter:number): Promise<number[]>{
         if(!this.source.getChaptersAvailable) throw new Error(`The source ${this.source.site} dont implement the function \`getChaptersAvailable\` `)
     
         try {
@@ -135,8 +134,8 @@ export class ManladagSource {
         }
     }
 
-    mangas:{ [name:string]: manga }
-    constructor( source : source ) {
+    mangas:{ [name:string]: Manladag.manga }
+    constructor( source : Manladag.source ) {
         this.site = source.site
         this.url = source.url
         this.mangas = source.mangas
@@ -172,7 +171,7 @@ export class ManladagSource {
      * Get manga from key
      * manga_key = typeof Object.keys(this.mngas)
      */
-    public getManga(manga_key:string):manga {
+    public getManga(manga_key:string):Manladag.manga {
         const m = this.mangas[manga_key]
         if(typeof(m)=="undefined") throw new Error(`The manga_key '${manga_key}' isn't exist in ${this.site}'lib`)
         return m

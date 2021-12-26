@@ -1,8 +1,7 @@
-/// <reference path="source.ts"/>
 interface argsOnDonwloadPageStartedListener {
   path:string,
   page:number,
-  source:source,
+  source:Manladag.source,
   manga:string,
   chapter:number,
   numberPage: number
@@ -11,7 +10,7 @@ interface argsOnDonwloadPageStartedListener {
 interface argsOnDonwloadPageFinishedListener {
   path:string,
   page:number,
-  source:source,
+  source:Manladag.source,
   manga:string,
   chapter:number,
   numberPage: number
@@ -20,7 +19,7 @@ interface argsOnDonwloadPageFinishedListener {
 interface argsOnDonwloadPageErrorListener {
   path:string,
   page:number,
-  source:source,
+  source:Manladag.source,
   manga:string,
   error:Error,
   chapter:number
@@ -65,7 +64,7 @@ interface argsOnDonwloadChapterRestartedListener extends argsOnDonwloadChapterFi
 }
  
 
-namespace Manladag {
+export namespace Manladag {
   export namespace Download {
     export namespace Events {
       export interface onDonwloadPageStartedListener {
@@ -105,14 +104,29 @@ namespace Manladag {
     onDonwloadChapterRestartedListener?: Manladag.Download.Events.onDonwloadChapterRestartedListener
     
   }
+  export interface MlagManifestProperties {
+    site:string,
+    url:string,
+    manga:manga,
+    chapter: number,
+    "pages-number": number,
+    "download-date": string,
+    "manifest-version": string
+  }
+  export interface manga {
+    name: string
+  }
+
+  export interface source {
+      site: string,
+      url: string,
+      mangas: { [name:string]: manga },
+      getNumberPageChapter(manga:manga,chapter:number):Promise<number>,
+      getUrlPages(manga:manga,chapter:number):Promise<string[]>,
+      getLastChapter(manga:manga):Promise<number>,
+      chapterIsAvailable(manga:manga,chapter:number) : Promise<boolean>
+      getChaptersAvailable?(manga:manga, fromChapter:number, toChapter:number): Promise<number[]>
+  }
 }
 
-interface MlagManifestProperties {
-  site:string,
-  url:string,
-  manga:manga,
-  chapter: number,
-  "pages-number": number,
-  "download-date": string,
-  "manifest-version": string
-}
+

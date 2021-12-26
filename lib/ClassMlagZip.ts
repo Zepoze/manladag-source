@@ -1,7 +1,8 @@
 import AdmZip from 'adm-zip'
+import { Manladag } from './manladag-namespace'
 
 export default class MlagZip extends AdmZip {
-    properties:MlagManifestProperties
+    properties:Manladag.MlagManifestProperties
     constructor(filename:string) {
         super(filename)
         let tmp
@@ -12,7 +13,7 @@ export default class MlagZip extends AdmZip {
             throw new Error(filename+' is not a mlag file')
         }
 
-        const infos:MlagManifestProperties = tmp
+        const infos:Manladag.MlagManifestProperties = tmp
 
         if(infos["download-date"]||infos["manifest-version"]||infos["pages-number"]|| infos.chapter||infos.manga|| infos.site || infos.url) {
 

@@ -5,11 +5,11 @@ import fs, { lstatSync } from 'fs'
 import AdmZip from 'adm-zip'
 
 import { downloadImage } from './functions'
-import { _DOWNLOAD } from '.'
+import { Manladag, _DOWNLOAD } from '.'
 
 export class ManladagDownload extends EventEmitter{
     readonly dirDownload:string
-    readonly manga:manga
+    readonly manga:Manladag.manga
     readonly chapter:number
     readonly site: string
     readonly url: string
@@ -20,7 +20,7 @@ export class ManladagDownload extends EventEmitter{
 
     private mlagPath: string |undefined
 
-    constructor(source: { site:string, url:string }, manga: manga, chapter: number, pagesUrl: string[], dirDownload:string, opts: { events?: Manladag.DownloadEvents, flag?:number, mlag?: string }) {
+    constructor(source: { site:string, url:string }, manga: Manladag.manga, chapter: number, pagesUrl: string[], dirDownload:string, opts: { events?: Manladag.DownloadEvents, flag?:number, mlag?: string }) {
         super()
         this.site = source.site
         this.url = source.url

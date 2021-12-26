@@ -1,11 +1,10 @@
-/// <reference path="./types/source.ts"/>
 import axios from 'axios'
 import fs from 'fs'
 
 
 export function downloadImage(path:string, url:string,page:number) {
     const TheError:Error = new Error('Impossible to download the page '+(page)+' Please check your Internet Connection')
-    return new Promise(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
         const writer = fs.createWriteStream(path)
         writer.on('error', reject)
         let d:number = Date.now()
