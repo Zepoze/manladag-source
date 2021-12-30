@@ -6,6 +6,7 @@ import AdmZip from 'adm-zip'
 
 import { downloadImage } from './functions'
 import { Manladag, _DOWNLOAD } from '.'
+import { argsOnDonwloadChapterErrorListener,argsOnDonwloadChapterAbortedListener, argsOnDonwloadChapterFinishedListener, argsOnDonwloadChapterRestartedListener, argsOnDonwloadChapterStartedListener, argsOnDonwloadPageErrorListener, argsOnDonwloadPageFinishedListener, argsOnDonwloadPageStartedListener } from './manladag-namespace'
 
 export class ManladagDownload extends EventEmitter{
     readonly dirDownload:string
@@ -65,20 +66,23 @@ export class ManladagDownload extends EventEmitter{
         try {
             this.state = _DOWNLOAD.STATE.STARTED
             let path:string
-
-            this.emit('download-chapter-started', {manga:this.manga.name,numberPage,path:this.dirDownload,chapter: this.chapter,source:this.site})
+            const args:argsOnDonwloadChapterStartedListener = {manga:this.manga.name,numberPage,path:this.dirDownload,chapter: this.chapter,source:this.site}
+            this.emit('download-chapter-started', args)
 
             for(let i =0;i<numberPage;i++) {
                 if(this.state & _DOWNLOAD.STATE.WAITING_TO_ABORT)
                     break  
                 path = this._getPageUrlPath(i)
-
-                this.emit('download-page-started', {path,page:i+1,chapter: this.chapter,source:this.site,manga: this.manga.name, numberPage})
+                const args:argsOnDonwloadPageStartedListener = {path,page:i+1,chapter: this.chapter,source:this.site,manga: this.manga.name, numberPage}
+                this.emit('download-page-started', args)
                 try {
+    
                     await this._downloadImage(path,this.pagesUrl[i],i+1)
-                    this.emit('download-page-finished', {path,page:i+1,chapter: this.chapter,source:this.site,manga:this.manga.name, numberPage})
+                    const argspf:argsOnDonwloadPageFinishedListener = {path,page:i+1,chapter: this.chapter,source:this.site,manga:this.manga.name, numberPage}
+                    this.emit('download-page-finished', argspf)
                 } catch(e) {
-                    this.emit('download-page-error', {path,page:i+1,chapter: this.chapter,source:this.site,error:e,manga:this.manga.name, numberPage})
+                    const argspe:argsOnDonwloadPageErrorListener = {path,page:i+1,chapter: this.chapter,source:this.site,error:e,manga:this.manga.name, numberPage}
+                    this.emit('download-page-error', argspe)
                     throw e
                 }
             }
@@ -87,10 +91,14 @@ export class ManladagDownload extends EventEmitter{
                 const restart = this.state & _DOWNLOAD.STATE.WAITING_TO_RESTART
                 this.state = _DOWNLOAD.STATE.WAITING_TO_START
                 if(restart && !forceAbort) {
-                    this.emit('download-chapter-restarted', {manga:this.manga.name,numberPage,path:this.dirDownload,chapter: this.chapter,source:this.site, restartCount: this.tryCount})
+                    const args:argsOnDonwloadChapterRestartedListener = {manga:this.manga.name,numberPage,path:this.dirDownload,chapter: this.chapter,source:this.site, restartCount: this.tryCount,maxRestart:this.maxTry};
+                    this.emit('download-chapter-restarted', args)
                     this.start()
                 } 
-                else this.emit('download-chapter-aborted', {manga:this.manga.name,numberPage,path:this.dirDownload,chapter: this.chapter,source:this.site})
+                else {
+                    const args:argsOnDonwloadChapterAbortedListener = {manga:this.manga.name,numberPage,path:this.dirDownload,chapter: this.chapter,source:this.site}
+                    this.emit('download-chapter-aborted', args)
+                }
                 
             }
             else {
@@ -98,16 +106,19 @@ export class ManladagDownload extends EventEmitter{
                     this._mlag()
                 }
                 this.state = _DOWNLOAD.STATE.FINISHED
-                this.emit('download-chapter-finished', {manga:this.manga.name,numberPage,path:this.mlagPath? this.mlagPath : this.dirDownload,chapter: this.chapter,source:this.site})
+                const args:argsOnDonwloadChapterFinishedListener = {manga:this.manga.name,numberPage,path:this.mlagPath? this.mlagPath : this.dirDownload,chapter: this.chapter,source:this.site}
+                this.emit('download-chapter-finished', args)
                 this.reset()
             }
             return null
         }catch (e) {
             this.state = _DOWNLOAD.STATE.WAITING_TO_START
             if(this.tryCount>this.maxTry) {
-                this.emit('download-chapter-error', {chapter: this.chapter,source:this.site,error:e,manga:this.manga.name, path:this.dirDownload, numberPage})
+                const args:argsOnDonwloadChapterErrorListener = {chapter: this.chapter,source:this.site,error:e,manga:this.manga.name, path:this.dirDownload, numberPage}
+                this.emit('download-chapter-error', args)
             } else {
-                this.emit('download-chapter-restarted', {manga:this.manga.name,numberPage,path:this.dirDownload,chapter: this.chapter,source:this.site, error:e, restartCount: this.tryCount, maxRestart: this.maxTry})
+                const args:argsOnDonwloadChapterRestartedListener = {manga:this.manga.name,numberPage,path:this.dirDownload,chapter: this.chapter,source:this.site, error:e, restartCount: this.tryCount, maxRestart: this.maxTry}
+                this.emit('download-chapter-restarted', args)
                 await this._restart()
             }
             return null

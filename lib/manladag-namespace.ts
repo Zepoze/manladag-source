@@ -1,31 +1,32 @@
-interface argsOnDonwloadPageStartedListener {
+export interface argsOnDonwloadPageStartedListener {
   path:string,
   page:number,
-  source:Manladag.source,
+  source:string,
   manga:string,
   chapter:number,
   numberPage: number
 }
 
-interface argsOnDonwloadPageFinishedListener {
+export interface argsOnDonwloadPageFinishedListener {
   path:string,
   page:number,
-  source:Manladag.source,
+  source:string,
   manga:string,
   chapter:number,
   numberPage: number
 }
 
-interface argsOnDonwloadPageErrorListener {
+export interface argsOnDonwloadPageErrorListener {
   path:string,
   page:number,
-  source:Manladag.source,
+  source:string,
   manga:string,
   error:Error,
-  chapter:number
+  chapter:number,
+  numberPage: number
 }
 
-interface argsOnDonwloadChapterStartedListener {
+export interface argsOnDonwloadChapterStartedListener {
   manga:string,
   path:string,
   numberPage:number,
@@ -33,10 +34,7 @@ interface argsOnDonwloadChapterStartedListener {
   chapter:number
 }
 
-interface argsOnDonwloadChapterErrorListener {manga:string,path:string,numberPage:number,source:string,chapter:number,error:Error}
- 
-
-interface argsOnDonwloadChapterFinishedListener {
+export interface argsOnDonwloadChapterFinishedListener {
   manga:string,
   path:string,
   numberPage:number,
@@ -44,11 +42,11 @@ interface argsOnDonwloadChapterFinishedListener {
   chapter:number
 }
 
-interface argsOnDonwloadChapterAbortedListener extends argsOnDonwloadChapterFinishedListener {
+export interface argsOnDonwloadChapterAbortedListener extends argsOnDonwloadChapterFinishedListener {
 
 }
 
-interface argsOnDonwloadChapterErrorListener {
+export interface argsOnDonwloadChapterErrorListener {
   manga:string,
   path:string,
   numberPage:number,
@@ -57,7 +55,7 @@ interface argsOnDonwloadChapterErrorListener {
   error:Error
 }
 
-interface argsOnDonwloadChapterRestartedListener extends argsOnDonwloadChapterFinishedListener {
+export interface argsOnDonwloadChapterRestartedListener extends argsOnDonwloadChapterFinishedListener {
   error?:Error
   restartCount:number
   maxRestart:number
