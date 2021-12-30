@@ -7,6 +7,12 @@ import AdmZip from 'adm-zip'
 import { downloadImage } from './functions'
 import { Manladag, _DOWNLOAD } from '.'
 
+/**
+ * An instance can control beahvior of a download 
+ * restart if failed
+ * , abort
+ * , etc ...
+ */
 export class ManladagDownload extends EventEmitter{
     readonly dirDownload:string
     readonly manga:Manladag.manga
@@ -228,7 +234,8 @@ export class ManladagDownload extends EventEmitter{
     // SETTERS EVENTS
     /**
      * Set a callback when a download's page started
-     * @param listener 
+     * @param listener
+     * @returns {this} return this
      */
     public setOnDownloadPageStartedListener(listener: Manladag.Download.Events.onDonwloadPageStartedListener) {
         return this.on('download-page-started', listener)
@@ -236,7 +243,8 @@ export class ManladagDownload extends EventEmitter{
 
     /**
      * Set a callback when a download's page finished
-     * @param listener 
+     * @param listener
+     * @returns {this} return this
      */
     public setOnDownloadPageFinishedListener(listener: Manladag.Download.Events.onDonwloadPageFinishedListener) {
         return this.on('download-page-finished', listener)
@@ -244,15 +252,17 @@ export class ManladagDownload extends EventEmitter{
 
     /**
      * Set a callback when a download's page throw error
-     * @param listener 
+     * @param listener
+     * @returns {this} return this
      */
-    public setOnDownloadPageErrorListener(listener: Manladag.Download.Events.onDonwloadPageErrorListener) {
+    public setOnDownloadPageErrorListener(listener: Manladag.Download.Events.onDonwloadPageErrorListener):this {
         return this.on('download-page-error', listener)
     }
 
     /**
      * Set a callback when a download's chapter started
      * @param listener 
+     * @returns {this} return this
      */
     public setOnDownloadChapterStartedListener(listener: Manladag.Download.Events.onDonwloadChapterStartedListener): this {
         return this.on('download-chapter-started', listener)
@@ -260,7 +270,8 @@ export class ManladagDownload extends EventEmitter{
 
     /**
      * Set a callback when a download's chapter finished
-     * @param listener 
+     * @param listener
+     * @returns {this} return this
      */
     public setOnDownloadChapterFinishedListener(listener: Manladag.Download.Events.onDonwloadChapterFinishedListener) {
         return this.on('download-chapter-finished', listener)
@@ -268,7 +279,8 @@ export class ManladagDownload extends EventEmitter{
 
     /**
      * Set a callback when a download's chapter aborted
-     * @param listener 
+     * @param listener
+     * @returns {this} return this
      */
     public setOnDownloadChapterAbortedListener(listener: Manladag.Download.Events.onDonwloadChapterAbortedListener) {
         return this.on('download-chapter-aborted', listener)
@@ -276,7 +288,8 @@ export class ManladagDownload extends EventEmitter{
 
     /**
      * Set a callback when a download's chapter restarted
-     * @param listener 
+     * @param listener
+     * @returns {this} return this
      */
     public setOnDownloadChapterRestartedListener(listener: Manladag.Download.Events.onDonwloadChapterRestartedListener) {
         return this.on('download-chapter-restarted', listener)
@@ -284,7 +297,8 @@ export class ManladagDownload extends EventEmitter{
 
     /**
      * Set a callback when a download's chapter throw error
-     * @param listener 
+     * @param listener
+     * @returns {this} return this
      */
     public setOnDownloadChapterErrorListener(listener:Manladag.Download.Events.onDonwloadChapterErrorListener) {
         return this.on('download-chapter-error', listener)

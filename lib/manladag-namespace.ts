@@ -1,4 +1,4 @@
-interface argsOnDonwloadPageStartedListener {
+export interface argsOnDonwloadPageStartedListener {
   path:string,
   page:number,
   source:Manladag.source,
@@ -7,7 +7,7 @@ interface argsOnDonwloadPageStartedListener {
   numberPage: number
 }
 
-interface argsOnDonwloadPageFinishedListener {
+export interface argsOnDonwloadPageFinishedListener {
   path:string,
   page:number,
   source:Manladag.source,
@@ -16,7 +16,7 @@ interface argsOnDonwloadPageFinishedListener {
   numberPage: number
 }
 
-interface argsOnDonwloadPageErrorListener {
+export interface argsOnDonwloadPageErrorListener {
   path:string,
   page:number,
   source:Manladag.source,
@@ -25,7 +25,7 @@ interface argsOnDonwloadPageErrorListener {
   chapter:number
 }
 
-interface argsOnDonwloadChapterStartedListener {
+export interface argsOnDonwloadChapterStartedListener {
   manga:string,
   path:string,
   numberPage:number,
@@ -33,10 +33,10 @@ interface argsOnDonwloadChapterStartedListener {
   chapter:number
 }
 
-interface argsOnDonwloadChapterErrorListener {manga:string,path:string,numberPage:number,source:string,chapter:number,error:Error}
+export interface argsOnDonwloadChapterErrorListener {manga:string,path:string,numberPage:number,source:string,chapter:number,error:Error}
  
 
-interface argsOnDonwloadChapterFinishedListener {
+export interface argsOnDonwloadChapterFinishedListener {
   manga:string,
   path:string,
   numberPage:number,
@@ -44,11 +44,9 @@ interface argsOnDonwloadChapterFinishedListener {
   chapter:number
 }
 
-interface argsOnDonwloadChapterAbortedListener extends argsOnDonwloadChapterFinishedListener {
+export type argsOnDonwloadChapterAbortedListener = argsOnDonwloadChapterFinishedListener 
 
-}
-
-interface argsOnDonwloadChapterErrorListener {
+export interface argsOnDonwloadChapterErrorListener {
   manga:string,
   path:string,
   numberPage:number,
@@ -57,7 +55,7 @@ interface argsOnDonwloadChapterErrorListener {
   error:Error
 }
 
-interface argsOnDonwloadChapterRestartedListener extends argsOnDonwloadChapterFinishedListener {
+export interface argsOnDonwloadChapterRestartedListener extends argsOnDonwloadChapterFinishedListener {
   error?:Error
   restartCount:number
   maxRestart:number

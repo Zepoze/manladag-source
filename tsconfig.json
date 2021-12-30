@@ -62,5 +62,16 @@
 
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
+  },
+  "typedocOptions": {
+    "entryPoints": [
+      "lib/index.ts",
+      "lib/manladagDownload.ts",
+      "lib/manladag-namespace.ts",
+    ],
+    "out": "docs",
+    "entryPointStrategy": "expand",
+    "excludePrivate": true
+
   }
 }

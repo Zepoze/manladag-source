@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { ManladagDownload } from './manladagDownload'
 import { ManladagLibError } from './ManladagLibError'
-import ClassMlagZip from './ClassMlagZip'
+export {default as MlagZip} from './ClassMlagZip'
 import { Manladag } from './manladag-namespace'
 export {Manladag} from './manladag-namespace'
 
@@ -51,7 +51,7 @@ export class ManladagSource {
     public async getNumberPageChapter(manga:Manladag.manga|string,chapter:number):Promise<number>{
         try {
             return await this.source.getNumberPageChapter(typeof manga == 'string' ? this.getManga(manga) : manga, chapter)
-        } catch(error) {
+        } catch(error:any) {
             throw new ManladagLibError(this.source, error)
         }
     }
@@ -74,7 +74,7 @@ export class ManladagSource {
     public async getUrlPages(manga:Manladag.manga|string,chapter:number):Promise<string[]>{
         try {
             return await this.source.getUrlPages(typeof manga == 'string' ? this.getManga(manga) : manga, chapter)
-        } catch (error) {
+        } catch (error:any) {
             throw new ManladagLibError(this.source, error)
         }
     }
@@ -95,7 +95,7 @@ export class ManladagSource {
     public async getLastChapter(manga:Manladag.manga|string):Promise<number> {
         try {
             return await this.source.getLastChapter(typeof manga == 'string' ? this.getManga(manga) : manga)
-        } catch(error) {
+        } catch(error:any) {
             throw new ManladagLibError(this.source, error)
         }
     }
@@ -118,7 +118,7 @@ export class ManladagSource {
     public async chapterIsAvailable(manga:Manladag.manga|string,chapter:number): Promise<boolean> {
         try {
             return await this.source.chapterIsAvailable(typeof manga == 'string' ? this.getManga(manga) : manga, chapter)
-        } catch (error) {
+        } catch (error:any) {
             throw new ManladagLibError(this.source, error)
         }
     }
@@ -129,7 +129,7 @@ export class ManladagSource {
     
         try {
             return this.source.getChaptersAvailable!(typeof manga == 'string' ? this.getManga(manga) : manga,fromChapter,toChapter)
-        } catch (error) {
+        } catch (error:any) {
             throw new ManladagLibError(this.source, error)
         }
     }
@@ -242,8 +242,4 @@ export class ManladagSource {
         this.downloadEvents.onDonwloadChapterRestartedListener = listener
         return this
     }
-}
-
-export class MlagZip extends ClassMlagZip {
-
 }
